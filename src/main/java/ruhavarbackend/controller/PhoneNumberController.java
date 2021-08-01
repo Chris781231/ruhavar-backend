@@ -8,12 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ruhavarbackend.command.CreatePhoneNumberCommand;
 import ruhavarbackend.command.UpdatePhoneNumberCommand;
-import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.dto.PhoneNumberDTO;
+import ruhavarbackend.service.PhoneNumberService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/phonenumbers")
@@ -35,20 +34,20 @@ public class PhoneNumberController {
         return service.findPhoneNumberById(id);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update number of a phonenumber")
-    public PhoneNumberDTO updatePhoneNumberById(
-            @PathVariable long id,
-            @RequestBody @Valid UpdatePhoneNumberCommand command) {
-        return service.updatePhoneNumberById(id, command);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a phonenumber")
     @ApiResponse(responseCode = "201", description = "Phonenumber has been created")
     public PhoneNumberDTO savePhoneNumber(@RequestBody @Valid CreatePhoneNumberCommand command) {
         return service.savePhoneNumber(command);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update number of a phonenumber")
+    public PhoneNumberDTO updatePhoneNumberById(
+            @PathVariable long id,
+            @RequestBody @Valid UpdatePhoneNumberCommand command) {
+        return service.updatePhoneNumberById(id, command);
     }
 
     @DeleteMapping("/{id}")

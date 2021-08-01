@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.zalando.problem.Problem;
 import ruhavarbackend.command.CreateCustomerCommand;
 import ruhavarbackend.command.CreatePhoneNumberCommand;
 import ruhavarbackend.command.UpdateCustomerCommand;
@@ -104,5 +106,32 @@ public class PhoneNumberControllerRestIT {
                 .getBody();
 
         assertTrue(Objects.requireNonNull(result).isEmpty());
+    }
+
+    @Test
+    void saveInvalidCustomerTest() {
+        Problem blankTypeProblem = template.postForObject("/api/phonenumbers",
+                new CreatePhoneNumberCommand("", "701234567"),
+                Problem.class);
+        Problem blankNumberProblem = template.postForObject("/api/phonenumbers",
+                new CreatePhoneNumberCommand("home", ""),
+                Problem.class);
+
+        assertEquals(400, blankTypeProblem.getStatus().getStatusCode());
+        assertEquals(400, blankNumberProblem.getStatus().getStatusCode());
+    }
+
+    @Test
+    void updateInvalidNumberOfPhoneNumberTest() {
+        template.postForObject("/api/phonenumbers",
+                new CreatePhoneNumberCommand("cell", "701234567"),
+                PhoneNumberDTO.class);
+
+        Problem blankNumberProblem = template.exchange("/api/phonenumbers/1",
+                HttpMethod.PUT,
+                new HttpEntity<>(new UpdatePhoneNumberCommand("")),
+                Problem.class).getBody();
+
+        assertEquals(400, blankNumberProblem.getStatus().getStatusCode());
     }
 }

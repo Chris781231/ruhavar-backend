@@ -1,4 +1,4 @@
-package ruhavarbackend.controller;
+package ruhavarbackend.service;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
