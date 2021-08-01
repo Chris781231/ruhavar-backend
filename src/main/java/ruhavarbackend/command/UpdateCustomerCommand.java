@@ -24,9 +24,5 @@ public class UpdateCustomerCommand {
     @NotBlank
     private String address;
 
-    @Schema(example = "701234567")
-    private String phoneNumber;
-
-    @Schema(example = "eztalanszabad@gmail.com")
     private String email;
 }

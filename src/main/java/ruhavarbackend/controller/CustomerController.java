@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ruhavarbackend.command.CreateCustomerCommand;
 import ruhavarbackend.command.UpdateCustomerCommand;
+import ruhavarbackend.command.AddPhoneNumberCommand;
 import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.service.CustomerService;
 
@@ -47,6 +48,12 @@ public class CustomerController {
     @Operation(summary = "Updates a customer by id")
     public CustomerDTO updateCustomerById(@PathVariable long id, @RequestBody @Valid UpdateCustomerCommand command) {
         return service.updateCustomerById(id, command);
+    }
+
+    @PutMapping("/{id}/addphonenumber")
+    @Operation(summary = "Add phonenumber to customer by id")
+    public CustomerDTO addPhoneNumberById(@PathVariable long id, @RequestBody @Valid AddPhoneNumberCommand command) {
+        return service.addPhoneNumberById(id, command);
     }
 
     @DeleteMapping

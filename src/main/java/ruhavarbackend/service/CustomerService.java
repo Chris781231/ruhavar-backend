@@ -3,15 +3,17 @@ package ruhavarbackend.service;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ruhavarbackend.command.CreateCustomerCommand;
 import ruhavarbackend.command.UpdateCustomerCommand;
+import ruhavarbackend.command.AddPhoneNumberCommand;
 import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.entity.Customer;
+import ruhavarbackend.entity.PhoneNumber;
 import ruhavarbackend.exception.CustomerNotFoundException;
 import ruhavarbackend.repository.CustomerRepository;
+import ruhavarbackend.repository.PhoneNumberRepository;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -23,11 +25,13 @@ public class CustomerService {
 
     private CustomerRepository customerRepo;
 
+    private PhoneNumberRepository phoneNumberRepo;
+
     private ModelMapper modelMapper;
 
     public CustomerDTO saveCustomer(CreateCustomerCommand command) {
         Customer customer = new Customer(
-                command.getName(), command.getCity(), command.getAddress(), command.getPhoneNumber(), command.getEmail());
+                command.getName(), command.getCity(), command.getAddress());
         Customer savedCustomer = customerRepo.save(customer);
         return modelMapper.map(savedCustomer, CustomerDTO.class);
     }
@@ -56,10 +60,17 @@ public class CustomerService {
         customer.setName(command.getName());
         customer.setCity(command.getCity());
         customer.setAddress(command.getAddress());
-        customer.setPhoneNumber(command.getPhoneNumber());
-        customer.setEmail(command.getEmail());
         return modelMapper.map(customer, CustomerDTO.class);
+    }
 
+    @Transactional
+    public CustomerDTO addPhoneNumberById(long id, AddPhoneNumberCommand command) {
+        Customer customer = customerRepo.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+        PhoneNumber phoneNumber = new PhoneNumber(command.getType(), command.getNumber());
+        customer.addPhoneNumber(phoneNumber);
+        phoneNumberRepo.save(phoneNumber);
+        return modelMapper.map(customer, CustomerDTO.class);
     }
 
     public void deleteAll() {

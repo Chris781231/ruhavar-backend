@@ -1,13 +1,18 @@
 package ruhavarbackend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "customers")
@@ -27,15 +32,34 @@ public class Customer {
 
     private String address;
 
-    private String phoneNumber;
+    @OneToMany(mappedBy = "customer", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @ToString.Exclude
+    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     private String email;
 
-    public Customer(String name, String city, String address, String phoneNumber, String email) {
+    public Customer(String name, String city, String address) {
         this.name = name;
         this.city = city;
         this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+    }
+
+    public void addPhoneNumber(PhoneNumber phoneNumber) {
+        phoneNumbers.add(phoneNumber);
+        phoneNumber.setCustomer(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Customer customer = (Customer) o;
+
+        return Objects.equals(id, customer.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 339958611;
     }
 }
