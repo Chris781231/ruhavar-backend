@@ -8,9 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ruhavarbackend.command.CreatePhoneNumberCommand;
 import ruhavarbackend.command.UpdatePhoneNumberCommand;
 import ruhavarbackend.dto.PhoneNumberDTO;
+import ruhavarbackend.entity.Customer;
 import ruhavarbackend.entity.PhoneNumber;
 import ruhavarbackend.exception.CustomerNotFoundException;
 import ruhavarbackend.exception.PhoneNumberNotFoundException;
+import ruhavarbackend.repository.CustomerRepository;
 import ruhavarbackend.repository.PhoneNumberRepository;
 
 import java.lang.reflect.Type;
@@ -21,6 +23,8 @@ import java.util.List;
 public class PhoneNumberService {
 
     private PhoneNumberRepository phoneNumberRepo;
+
+    private CustomerRepository customerRepo;
 
     private ModelMapper modelMapper;
 
@@ -35,10 +39,12 @@ public class PhoneNumberService {
         return modelMapper.map(phoneNumber, PhoneNumberDTO.class);
     }
 
-    public PhoneNumberDTO savePhoneNumber(CreatePhoneNumberCommand command) {
+    public PhoneNumberDTO savePhoneNumber(long id, CreatePhoneNumberCommand command) {
+        Customer customer = customerRepo.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
         PhoneNumber phoneNumber = new PhoneNumber(command.getType(), command.getNumber());
-        PhoneNumber savedPhoneNumber = phoneNumberRepo.save(phoneNumber);
-        return modelMapper.map(savedPhoneNumber, PhoneNumberDTO.class);
+        phoneNumber.setCustomer(customer);
+        phoneNumberRepo.save(phoneNumber);
+        return modelMapper.map(phoneNumber, PhoneNumberDTO.class);
     }
 
     @Transactional

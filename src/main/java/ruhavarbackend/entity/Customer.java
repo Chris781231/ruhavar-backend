@@ -35,10 +35,11 @@ public class Customer {
 
     private String email;
 
-    public Customer(String name, String city, String address) {
+    public Customer(String name, String city, String address, String email) {
         this.name = name;
         this.city = city;
         this.address = address;
+        this.email = email;
     }
 
     public void addPhoneNumber(PhoneNumber phoneNumber) {

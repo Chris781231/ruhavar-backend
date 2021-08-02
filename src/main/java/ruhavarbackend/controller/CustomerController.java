@@ -50,12 +50,6 @@ public class CustomerController {
         return service.updateCustomerById(id, command);
     }
 
-    @PutMapping("/{id}/addphonenumber")
-    @Operation(summary = "Add phonenumber to customer by id")
-    public CustomerDTO addPhoneNumberById(@PathVariable long id, @RequestBody @Valid AddPhoneNumberCommand command) {
-        return service.addPhoneNumberById(id, command);
-    }
-
     @DeleteMapping
     @Operation(summary = "Delete all of customers")
     public void deleteAll() {

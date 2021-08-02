@@ -31,7 +31,7 @@ public class CustomerService {
 
     public CustomerDTO saveCustomer(CreateCustomerCommand command) {
         Customer customer = new Customer(
-                command.getName(), command.getCity(), command.getAddress());
+                command.getName(), command.getCity(), command.getAddress(), command.getEmail());
         Customer savedCustomer = customerRepo.save(customer);
         return modelMapper.map(savedCustomer, CustomerDTO.class);
     }
@@ -60,18 +60,19 @@ public class CustomerService {
         customer.setName(command.getName());
         customer.setCity(command.getCity());
         customer.setAddress(command.getAddress());
+        customer.setEmail(command.getEmail());
         return modelMapper.map(customer, CustomerDTO.class);
     }
 
-    @Transactional
-    public CustomerDTO addPhoneNumberById(long id, AddPhoneNumberCommand command) {
-        Customer customer = customerRepo.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(id));
-        PhoneNumber phoneNumber = new PhoneNumber(command.getType(), command.getNumber());
-        customer.addPhoneNumber(phoneNumber);
-        phoneNumberRepo.save(phoneNumber);
-        return modelMapper.map(customer, CustomerDTO.class);
-    }
+//    @Transactional
+//    public CustomerDTO addPhoneNumberById(long id, AddPhoneNumberCommand command) {
+//        Customer customer = customerRepo.findById(id)
+//                .orElseThrow(() -> new CustomerNotFoundException(id));
+//        PhoneNumber phoneNumber = new PhoneNumber(command.getType(), command.getNumber());
+//        customer.addPhoneNumber(phoneNumber);
+////        phoneNumberRepo.save(phoneNumber);
+//        return modelMapper.map(customer, CustomerDTO.class);
+//    }
 
     public void deleteAll() {
         customerRepo.deleteAll();

@@ -11,10 +11,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.zalando.problem.Problem;
-import ruhavarbackend.command.CreateCustomerCommand;
-import ruhavarbackend.command.CreatePhoneNumberCommand;
-import ruhavarbackend.command.UpdateCustomerCommand;
-import ruhavarbackend.command.UpdatePhoneNumberCommand;
+import ruhavarbackend.command.*;
 import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.dto.PhoneNumberDTO;
 
@@ -48,10 +45,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void saveCustomerThenListAllTest() {
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("home", "19876543"),
                 PhoneNumberDTO.class);
 
@@ -66,7 +66,10 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void findPhoneNumberByIdTest() {
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
         PhoneNumberDTO result = template.exchange("/api/phonenumbers/1",
@@ -79,7 +82,10 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void updateNumberOfPhoneNumberTest() {
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
         template.put("/api/phonenumbers/1",
@@ -95,7 +101,10 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void deleteByIdTest() {
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
         template.delete("/api/phonenumbers/1");
@@ -110,10 +119,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void saveInvalidCustomerTest() {
-        Problem blankTypeProblem = template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("", "701234567"),
                 Problem.class);
-        Problem blankNumberProblem = template.postForObject("/api/phonenumbers",
+        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("home", ""),
                 Problem.class);
 
@@ -123,7 +135,10 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void updateInvalidNumberOfPhoneNumberTest() {
-        template.postForObject("/api/phonenumbers",
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
 
@@ -133,5 +148,37 @@ public class PhoneNumberControllerRestIT {
                 Problem.class).getBody();
 
         assertEquals(400, blankNumberProblem.getStatus().getStatusCode());
+    }
+
+    @Test
+    void addPhoneNumberTest() {
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "domain@mail.com"),
+                CustomerDTO.class);
+        template.postForObject("/api/phonenumbers/1",
+                new AddPhoneNumberCommand("cell", "701234567"),
+                PhoneNumberDTO.class);
+        CustomerDTO customerWithPhoneNumber = template.exchange("/api/customers/1",
+                HttpMethod.GET,
+                null,
+                CustomerDTO.class).getBody();
+
+        assertEquals("701234567", customerWithPhoneNumber.getPhoneNumbers().get(0).getNumber());
+    }
+
+    @Test
+    void addInvalidPhoneNumberTest() {
+        template.postForObject("/api/customers",
+                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "domain@mail.com"),
+                CustomerDTO.class);
+        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/1",
+                new AddPhoneNumberCommand("", "701234567"),
+                Problem.class);
+        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/1",
+                new AddPhoneNumberCommand("cell", ""),
+                Problem.class);
+
+        assertEquals(400,blankTypeProblem.getStatus().getStatusCode());
+        assertEquals(400,blankNumberProblem.getStatus().getStatusCode());
     }
 }

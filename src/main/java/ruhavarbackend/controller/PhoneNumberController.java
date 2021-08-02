@@ -34,12 +34,12 @@ public class PhoneNumberController {
         return service.findPhoneNumberById(id);
     }
 
-    @PostMapping
+    @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creates a phonenumber")
     @ApiResponse(responseCode = "201", description = "Phonenumber has been created")
-    public PhoneNumberDTO savePhoneNumber(@RequestBody @Valid CreatePhoneNumberCommand command) {
-        return service.savePhoneNumber(command);
+    public PhoneNumberDTO savePhoneNumber(@PathVariable long id, @RequestBody @Valid CreatePhoneNumberCommand command) {
+        return service.savePhoneNumber(id, command);
     }
 
     @PutMapping("/{id}")

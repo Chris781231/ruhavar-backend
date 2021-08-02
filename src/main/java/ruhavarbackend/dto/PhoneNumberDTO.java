@@ -3,6 +3,7 @@ package ruhavarbackend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ruhavarbackend.entity.Customer;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +15,6 @@ public class PhoneNumberDTO {
     private String type;
 
     private String number;
+
+    private Customer customer;
 }
