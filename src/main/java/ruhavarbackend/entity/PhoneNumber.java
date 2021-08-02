@@ -2,16 +2,12 @@ package ruhavarbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "phonenumbers")
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PhoneNumber {
@@ -32,19 +28,5 @@ public class PhoneNumber {
     public PhoneNumber(String type, String number) {
         this.type = type;
         this.number = number;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        PhoneNumber that = (PhoneNumber) o;
-
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 564916499;
     }
 }

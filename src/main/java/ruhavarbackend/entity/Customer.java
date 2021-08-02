@@ -1,21 +1,19 @@
 package ruhavarbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "customers")
+@Entity
+@Table(name = "customers")
 public class Customer {
 
     @Id
@@ -33,7 +31,6 @@ public class Customer {
     private String address;
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @ToString.Exclude
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     private String email;
@@ -47,19 +44,5 @@ public class Customer {
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         phoneNumbers.add(phoneNumber);
         phoneNumber.setCustomer(this);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Customer customer = (Customer) o;
-
-        return Objects.equals(id, customer.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 339958611;
     }
 }
