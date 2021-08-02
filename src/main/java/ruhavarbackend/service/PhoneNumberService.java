@@ -10,8 +10,7 @@ import ruhavarbackend.command.UpdatePhoneNumberCommand;
 import ruhavarbackend.dto.PhoneNumberDTO;
 import ruhavarbackend.entity.Customer;
 import ruhavarbackend.entity.PhoneNumber;
-import ruhavarbackend.exception.CustomerNotFoundException;
-import ruhavarbackend.exception.PhoneNumberNotFoundException;
+import ruhavarbackend.exception.EntityNotFoundException;
 import ruhavarbackend.repository.CustomerRepository;
 import ruhavarbackend.repository.PhoneNumberRepository;
 
@@ -21,6 +20,9 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class PhoneNumberService {
+
+    public static final String PHONENUMBER = "phonenumber";
+    public static final String CUSTOMER = "customer";
 
     private PhoneNumberRepository phoneNumberRepo;
 
@@ -35,12 +37,12 @@ public class PhoneNumberService {
     }
 
     public PhoneNumberDTO findPhoneNumberById(long id) {
-        PhoneNumber phoneNumber = phoneNumberRepo.findById(id).orElseThrow(() -> new PhoneNumberNotFoundException(id));
+        PhoneNumber phoneNumber = phoneNumberRepo.findById(id).orElseThrow(() -> new EntityNotFoundException(id, PHONENUMBER));
         return modelMapper.map(phoneNumber, PhoneNumberDTO.class);
     }
 
     public PhoneNumberDTO savePhoneNumber(long id, CreatePhoneNumberCommand command) {
-        Customer customer = customerRepo.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        Customer customer = customerRepo.findById(id).orElseThrow(() -> new EntityNotFoundException(id, CUSTOMER));
         PhoneNumber phoneNumber = new PhoneNumber(command.getType(), command.getNumber());
         phoneNumber.setCustomer(customer);
         phoneNumberRepo.save(phoneNumber);
@@ -49,12 +51,15 @@ public class PhoneNumberService {
 
     @Transactional
     public PhoneNumberDTO updatePhoneNumberById(long id, UpdatePhoneNumberCommand command) {
-        PhoneNumber phoneNumber = phoneNumberRepo.findById(id).orElseThrow(() -> new PhoneNumberNotFoundException(id));
+        PhoneNumber phoneNumber = phoneNumberRepo.findById(id).orElseThrow(() -> new EntityNotFoundException(id, PHONENUMBER));
         phoneNumber.setNumber(command.getNumber());
         return modelMapper.map(phoneNumber, PhoneNumberDTO.class);
     }
 
     public void deleteById(long id) {
+        if (!phoneNumberRepo.existsById(id)) {
+            throw new EntityNotFoundException(id, PHONENUMBER);
+        }
         phoneNumberRepo.deleteById(id);
     }
 

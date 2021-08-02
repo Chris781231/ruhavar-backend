@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -24,5 +25,7 @@ public class UpdateCustomerCommand {
     @NotBlank
     private String address;
 
+    @Schema(example = "name@domain.com")
+    @Email
     private String email;
 }

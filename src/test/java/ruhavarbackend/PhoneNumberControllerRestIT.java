@@ -30,15 +30,15 @@ public class PhoneNumberControllerRestIT {
 
     @BeforeEach
     void init() throws SQLException {
-        MariaDbDataSource dataSource = new MariaDbDataSource();
-        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
-        dataSource.setUser("ruhavar");
-        dataSource.setPassword("ruhavar");
-
-        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-
-        flyway.clean();
-        flyway.migrate();
+//        MariaDbDataSource dataSource = new MariaDbDataSource();
+//        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
+//        dataSource.setUser("ruhavar");
+//        dataSource.setPassword("ruhavar");
+//
+//        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+//
+//        flyway.clean();
+//        flyway.migrate();
 
         template.delete("/api/phonenumbers");
     }
@@ -69,9 +69,10 @@ public class PhoneNumberControllerRestIT {
         template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        PhoneNumberDTO cell = template.postForObject("/api/phonenumbers/1",
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
+        System.out.println(cell.getId());
         PhoneNumberDTO result = template.exchange("/api/phonenumbers/1",
                 HttpMethod.GET,
                 null,
@@ -82,16 +83,16 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void updateNumberOfPhoneNumberTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.put("/api/phonenumbers/1",
+        template.put("/api/phonenumbers/" + customerDTO.getId(),
                 new UpdatePhoneNumberCommand("209876543"));
 
-        PhoneNumberDTO result = template.exchange("/api/phonenumbers/1",
+        PhoneNumberDTO result = template.exchange("/api/phonenumbers/" + customerDTO.getId(),
                 HttpMethod.GET,
                 null,
                 PhoneNumberDTO.class).getBody();
@@ -101,13 +102,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void deleteByIdTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.delete("/api/phonenumbers/1");
+        template.delete("/api/phonenumbers/" + customerDTO.getId());
         List<PhoneNumberDTO> result = template.exchange("/api/phonenumbers",
                 HttpMethod.GET,
                 null,
@@ -119,13 +120,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void saveInvalidCustomerTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/1",
+        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("", "701234567"),
                 Problem.class);
-        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/1",
+        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("home", ""),
                 Problem.class);
 
@@ -135,14 +136,14 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void updateInvalidNumberOfPhoneNumberTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
 
-        Problem blankNumberProblem = template.exchange("/api/phonenumbers/1",
+        Problem blankNumberProblem = template.exchange("/api/phonenumbers/" + customerDTO.getId(),
                 HttpMethod.PUT,
                 new HttpEntity<>(new UpdatePhoneNumberCommand("")),
                 Problem.class).getBody();
@@ -152,13 +153,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void addPhoneNumberTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "domain@mail.com"),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new AddPhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        CustomerDTO customerWithPhoneNumber = template.exchange("/api/customers/1",
+        CustomerDTO customerWithPhoneNumber = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.GET,
                 null,
                 CustomerDTO.class).getBody();
@@ -168,13 +169,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void addInvalidPhoneNumberTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "domain@mail.com"),
                 CustomerDTO.class);
-        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/1",
+        Problem blankTypeProblem = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new AddPhoneNumberCommand("", "701234567"),
                 Problem.class);
-        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/1",
+        Problem blankNumberProblem = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new AddPhoneNumberCommand("cell", ""),
                 Problem.class);
 

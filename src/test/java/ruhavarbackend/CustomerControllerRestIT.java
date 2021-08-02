@@ -31,15 +31,15 @@ public class CustomerControllerRestIT {
 
     @BeforeEach
     void init() throws SQLException {
-        MariaDbDataSource dataSource = new MariaDbDataSource();
-        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
-        dataSource.setUser("ruhavar");
-        dataSource.setPassword("ruhavar");
-
-        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-
-        flyway.clean();
-        flyway.migrate();
+//        MariaDbDataSource dataSource = new MariaDbDataSource();
+//        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
+//        dataSource.setUser("ruhavar");
+//        dataSource.setPassword("ruhavar");
+//
+//        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+//
+//        flyway.clean();
+//        flyway.migrate();
 
         template.delete("/api/customers");
     }
@@ -80,16 +80,16 @@ public class CustomerControllerRestIT {
                 new ParameterizedTypeReference<List<CustomerDTO>>() {})
                 .getBody();
 
-        assertEquals("Teszt Jóska", Objects.requireNonNull(result).get(0).getName());
+        assertEquals("Bárakárhol", Objects.requireNonNull(result).get(0).getAddress());
     }
 
     @Test
     void updateCustomerTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
                 CustomerDTO.class);
 
-        template.put("/api/customers/1",
+        template.put("/api/customers/" + customerDTO.getId(),
                 new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"));
 
         CustomerDTO result = template.exchange("/api/customers",
@@ -123,7 +123,7 @@ public class CustomerControllerRestIT {
 
     @Test
     void findCustomerWithInvalidIdTest() {
-        Problem customerNotFoundProblem = template.exchange("/api/customers/1",
+        Problem customerNotFoundProblem = template.exchange("/api/customers/10000",
                 HttpMethod.GET,
                 null,
                 Problem.class).getBody();
@@ -133,7 +133,7 @@ public class CustomerControllerRestIT {
 
     @Test
     void updateCustomerWithInvalidIdTest() {
-        Problem customerNotFoundProblem = template.exchange("/api/customer/2",
+        Problem customerNotFoundProblem = template.exchange("/api/customer/10000",
                 HttpMethod.PUT,
                 new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com")),
                 Problem.class).getBody();
@@ -143,19 +143,19 @@ public class CustomerControllerRestIT {
 
     @Test
     void updateCustomerWithBlankAttributesTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
                 CustomerDTO.class);
 
-        Problem blankNameProblem = template.exchange("/api/customers/1",
+        Problem blankNameProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
                 new HttpEntity<>(new UpdateCustomerCommand("", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com")),
                 Problem.class).getBody();
-        Problem blankCityProblem = template.exchange("/api/customers/1",
+        Problem blankCityProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
                 new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "", "Világvége sarkon jobbra", "name@domain.com")),
                 Problem.class).getBody();
-        Problem blankAddressProblem = template.exchange("/api/customers/1",
+        Problem blankAddressProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
                 new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "", "name@domain.com")),
                 Problem.class).getBody();
@@ -167,11 +167,11 @@ public class CustomerControllerRestIT {
 
     @Test
     void deleteByIdTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
                 CustomerDTO.class);
 
-        template.delete("/api/customers/1");
+        template.delete("/api/customers/" + customerDTO.getId());
 
         List<CustomerDTO> result = template.exchange("/api/customers",
                 HttpMethod.GET,
