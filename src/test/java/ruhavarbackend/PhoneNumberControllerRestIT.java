@@ -1,9 +1,7 @@
 package ruhavarbackend;
 
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -15,7 +13,6 @@ import ruhavarbackend.command.*;
 import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.dto.PhoneNumberDTO;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,29 +26,19 @@ public class PhoneNumberControllerRestIT {
     private TestRestTemplate template;
 
     @BeforeEach
-    void init() throws SQLException {
-//        MariaDbDataSource dataSource = new MariaDbDataSource();
-//        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
-//        dataSource.setUser("ruhavar");
-//        dataSource.setPassword("ruhavar");
-//
-//        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-//
-//        flyway.clean();
-//        flyway.migrate();
-
+    void init() {
         template.delete("/api/phonenumbers");
     }
 
     @Test
     void saveCustomerThenListAllTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.postForObject("/api/phonenumbers/1",
+        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("home", "19876543"),
                 PhoneNumberDTO.class);
 
@@ -66,14 +53,13 @@ public class PhoneNumberControllerRestIT {
 
     @Test
     void findPhoneNumberByIdTest() {
-        template.postForObject("/api/customers",
+        CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        PhoneNumberDTO cell = template.postForObject("/api/phonenumbers/1",
+        PhoneNumberDTO cell = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        System.out.println(cell.getId());
-        PhoneNumberDTO result = template.exchange("/api/phonenumbers/1",
+        PhoneNumberDTO result = template.exchange("/api/phonenumbers/" + cell.getId(),
                 HttpMethod.GET,
                 null,
                 PhoneNumberDTO.class).getBody();
@@ -86,13 +72,13 @@ public class PhoneNumberControllerRestIT {
         CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
+        PhoneNumberDTO cell = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.put("/api/phonenumbers/" + customerDTO.getId(),
+        template.put("/api/phonenumbers/" + cell.getId(),
                 new UpdatePhoneNumberCommand("209876543"));
 
-        PhoneNumberDTO result = template.exchange("/api/phonenumbers/" + customerDTO.getId(),
+        PhoneNumberDTO result = template.exchange("/api/phonenumbers/" + cell.getId(),
                 HttpMethod.GET,
                 null,
                 PhoneNumberDTO.class).getBody();
@@ -105,10 +91,10 @@ public class PhoneNumberControllerRestIT {
         CustomerDTO customerDTO = template.postForObject("/api/customers",
                 new CreateCustomerCommand("Teszt Pista", "Budapest", "Kossuth utca 2", ""),
                 CustomerDTO.class);
-        template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
+        PhoneNumberDTO cell = template.postForObject("/api/phonenumbers/" + customerDTO.getId(),
                 new CreatePhoneNumberCommand("cell", "701234567"),
                 PhoneNumberDTO.class);
-        template.delete("/api/phonenumbers/" + customerDTO.getId());
+        template.delete("/api/phonenumbers/" + cell.getId());
         List<PhoneNumberDTO> result = template.exchange("/api/phonenumbers",
                 HttpMethod.GET,
                 null,

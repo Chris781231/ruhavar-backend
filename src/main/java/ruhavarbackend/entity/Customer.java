@@ -16,10 +16,12 @@ import java.util.List;
 @Table(name = "customers")
 public class Customer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // TODO: 2021. 08. 03. Change id generation by identity to table, to do this it must be created a flyway migration file for tablegenerator
 //    @GeneratedValue(generator = "cus_gen")
 //    @TableGenerator(name = "cus_gen", table = "cus_id_gen", pkColumnName = "gen_name", valueColumnName = "gen_val")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
@@ -40,10 +42,5 @@ public class Customer {
         this.city = city;
         this.address = address;
         this.email = email;
-    }
-
-    public void addPhoneNumber(PhoneNumber phoneNumber) {
-        phoneNumbers.add(phoneNumber);
-        phoneNumber.setCustomer(this);
     }
 }

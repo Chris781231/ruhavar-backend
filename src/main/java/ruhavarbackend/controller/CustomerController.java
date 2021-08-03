@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ruhavarbackend.command.CreateCustomerCommand;
 import ruhavarbackend.command.UpdateCustomerCommand;
-import ruhavarbackend.command.AddPhoneNumberCommand;
 import ruhavarbackend.dto.CustomerDTO;
 import ruhavarbackend.service.CustomerService;
 

@@ -1,9 +1,7 @@
 package ruhavarbackend;
 
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mariadb.jdbc.MariaDbDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -15,7 +13,6 @@ import ruhavarbackend.command.CreateCustomerCommand;
 import ruhavarbackend.command.UpdateCustomerCommand;
 import ruhavarbackend.dto.CustomerDTO;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,17 +27,7 @@ public class CustomerControllerRestIT {
     private TestRestTemplate template;
 
     @BeforeEach
-    void init() throws SQLException {
-//        MariaDbDataSource dataSource = new MariaDbDataSource();
-//        dataSource.setUrl("jdbc:mariadb://localhost:3309/ruhavar?useUnicode=true");
-//        dataSource.setUser("ruhavar");
-//        dataSource.setPassword("ruhavar");
-//
-//        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-//
-//        flyway.clean();
-//        flyway.migrate();
-
+    void init() {
         template.delete("/api/customers");
     }
 
@@ -184,7 +171,7 @@ public class CustomerControllerRestIT {
 
     @Test
     void deleteByInvalidIdTest() {
-        Problem problem = template.exchange("/api/customers/1",
+        Problem problem = template.exchange("/api/customers/10000",
                 HttpMethod.DELETE,
                 null,
                 Problem.class).getBody();

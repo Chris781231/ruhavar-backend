@@ -1,3 +1,4 @@
+DROP table if exists `customers`;
 CREATE TABLE `customers` (
                              `id` bigint(20) AUTO_INCREMENT,
                              `address` varchar(255) COLLATE utf8mb4_hungarian_ci DEFAULT NULL,
