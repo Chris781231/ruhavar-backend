@@ -34,10 +34,10 @@ public class CustomerControllerRestIT {
     @Test
     void saveCustomerThenListAllTest() {
         template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége köz sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "Kossuth utca 2", "name@domain.com"),
                 CustomerDTO.class);
         template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Jóska", "Alsóbögyörősvalagpuszta", "Bárakárhol", "name@domain.com"),
+                new CreateCustomerCommand("Jane Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"),
                 CustomerDTO.class);
 
         List<CustomerDTO> result = template.exchange("/api/customers",
@@ -49,35 +49,35 @@ public class CustomerControllerRestIT {
         assertThat(result)
                 .hasSize(2)
                 .extracting(CustomerDTO::getName, CustomerDTO::getCity, CustomerDTO::getAddress, CustomerDTO::getEmail)
-                .contains(tuple("Teszt Pista", "Karakószörcsög", "Világvége köz sarkon jobbra", "name@domain.com"));
+                .contains(tuple("Jane Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"));
     }
 
     @Test
     void findByNameTest() {
         template.postForObject("/api/customers",
-                new CreateCustomerCommand("Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "Kossuth utca 2", "name@domain.com"),
                 CustomerDTO.class);
         template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Jóska", "Alsóbögyörősvalagpuszta", "Bárakárhol", "name@domain.com"),
+                new CreateCustomerCommand("Jane Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"),
                 CustomerDTO.class);
 
-        List<CustomerDTO> result = template.exchange("/api/customers?name=Teszt Jóska",
+        List<CustomerDTO> result = template.exchange("/api/customers?name=Jane Doe",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<CustomerDTO>>() {})
                 .getBody();
 
-        assertEquals("Bárakárhol", Objects.requireNonNull(result).get(0).getAddress());
+        assertEquals("Széchenyi István tér 4", Objects.requireNonNull(result).get(0).getAddress());
     }
 
     @Test
     void updateCustomerTest() {
         CustomerDTO customerDTO = template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "Kossuth utca 2", "name@domain.com"),
                 CustomerDTO.class);
 
         template.put("/api/customers/" + customerDTO.getId(),
-                new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"));
+                new UpdateCustomerCommand("Jane Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"));
 
         CustomerDTO result = template.exchange("/api/customers",
                 HttpMethod.GET,
@@ -86,21 +86,21 @@ public class CustomerControllerRestIT {
                 })
                 .getBody().get(0);
 
-        assertEquals("Teszt Jóska", result.getName());
+        assertEquals("Jane Doe", result.getName());
     }
 
     @Test
     void saveCustomerWithInvalidNameCityAndAddressTest() {
         Problem nameProblem = template.postForObject("/api/customers",
-                new CreateCustomerCommand("", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"),
                 Problem.class);
 
         Problem cityProblem = template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "", "Széchenyi István tér 4", "anothername@domain.com"),
                 Problem.class);
 
         Problem addressProblem = template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "", "anothername@domain.com"),
                 Problem.class);
 
         assertEquals(400, nameProblem.getStatus().getStatusCode());
@@ -110,7 +110,7 @@ public class CustomerControllerRestIT {
 
     @Test
     void findCustomerWithInvalidIdTest() {
-        Problem customerNotFoundProblem = template.exchange("/api/customers/10000",
+        Problem customerNotFoundProblem = template.exchange("/api/customers/0",
                 HttpMethod.GET,
                 null,
                 Problem.class).getBody();
@@ -120,9 +120,9 @@ public class CustomerControllerRestIT {
 
     @Test
     void updateCustomerWithInvalidIdTest() {
-        Problem customerNotFoundProblem = template.exchange("/api/customer/10000",
+        Problem customerNotFoundProblem = template.exchange("/api/customers/0",
                 HttpMethod.PUT,
-                new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com")),
+                new HttpEntity<>(new UpdateCustomerCommand("John Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com")),
                 Problem.class).getBody();
 
         assertEquals(404,customerNotFoundProblem.getStatus().getStatusCode());
@@ -131,20 +131,20 @@ public class CustomerControllerRestIT {
     @Test
     void updateCustomerWithBlankAttributesTest() {
         CustomerDTO customerDTO = template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "Széchenyi István tér 4", "anothername@domain.com"),
                 CustomerDTO.class);
 
         Problem blankNameProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
-                new HttpEntity<>(new UpdateCustomerCommand("", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com")),
+                new HttpEntity<>(new UpdateCustomerCommand("", "Budapest", "Széchenyi István tér 4", "anothername@domain.com")),
                 Problem.class).getBody();
         Problem blankCityProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
-                new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "", "Világvége sarkon jobbra", "name@domain.com")),
+                new HttpEntity<>(new UpdateCustomerCommand("John Doe", "", "Széchenyi István tér 4", "anothername@domain.com")),
                 Problem.class).getBody();
         Problem blankAddressProblem = template.exchange("/api/customers/" + customerDTO.getId(),
                 HttpMethod.PUT,
-                new HttpEntity<>(new UpdateCustomerCommand("Teszt Jóska", "Karakószörcsög", "", "name@domain.com")),
+                new HttpEntity<>(new UpdateCustomerCommand("John Doe", "Budapest", "", "anothername@domain.com")),
                 Problem.class).getBody();
 
         assertEquals(400,blankNameProblem.getStatus().getStatusCode());
@@ -155,7 +155,7 @@ public class CustomerControllerRestIT {
     @Test
     void deleteByIdTest() {
         CustomerDTO customerDTO = template.postForObject("/api/customers",
-                new CreateCustomerCommand("Teszt Pista", "Karakószörcsög", "Világvége sarkon jobbra", "name@domain.com"),
+                new CreateCustomerCommand("John Doe", "Budapest", "Kossuth utca 2", "name@domain.com"),
                 CustomerDTO.class);
 
         template.delete("/api/customers/" + customerDTO.getId());
@@ -171,7 +171,7 @@ public class CustomerControllerRestIT {
 
     @Test
     void deleteByInvalidIdTest() {
-        Problem problem = template.exchange("/api/customers/10000",
+        Problem problem = template.exchange("/api/customers/0",
                 HttpMethod.DELETE,
                 null,
                 Problem.class).getBody();
