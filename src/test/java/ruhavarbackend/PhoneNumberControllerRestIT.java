@@ -9,9 +9,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.zalando.problem.Problem;
-import ruhavarbackend.command.*;
-import ruhavarbackend.dto.CustomerDTO;
-import ruhavarbackend.dto.PhoneNumberDTO;
+import ruhavarbackend.customer.dto.CreateCustomerCommand;
+import ruhavarbackend.customer.dto.CustomerDTO;
+import ruhavarbackend.phonenumber.dto.AddPhoneNumberCommand;
+import ruhavarbackend.phonenumber.dto.CreatePhoneNumberCommand;
+import ruhavarbackend.phonenumber.dto.PhoneNumberDTO;
+import ruhavarbackend.phonenumber.dto.UpdatePhoneNumberCommand;
 
 import java.util.List;
 import java.util.Objects;

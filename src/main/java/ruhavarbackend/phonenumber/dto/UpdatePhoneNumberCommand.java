@@ -1,4 +1,4 @@
-package ruhavarbackend.command;
+package ruhavarbackend.phonenumber.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,13 +10,9 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreatePhoneNumberCommand {
+public class UpdatePhoneNumberCommand {
 
-    @Schema(example = "cell")
-    @NotBlank
-    private String type;
-
-    @Schema(example = "701234567")
+    @Schema(example = "2098765432")
     @NotBlank
     private String number;
 }

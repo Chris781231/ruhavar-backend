@@ -1,7 +1,8 @@
-package ruhavarbackend.entity;
+package ruhavarbackend.phonenumber;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
+import ruhavarbackend.customer.Customer;
 
 import javax.persistence.*;
 

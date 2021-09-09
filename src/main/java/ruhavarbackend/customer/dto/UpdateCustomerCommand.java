@@ -1,4 +1,4 @@
-package ruhavarbackend.command;
+package ruhavarbackend.customer.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateCustomerCommand {
+public class UpdateCustomerCommand {
 
     @Schema(description = "name of customer", example = "Balogh Béla")
     @NotBlank

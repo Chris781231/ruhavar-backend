@@ -1,16 +1,14 @@
-package ruhavarbackend.service;
+package ruhavarbackend.customer;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ruhavarbackend.command.CreateCustomerCommand;
-import ruhavarbackend.command.UpdateCustomerCommand;
-import ruhavarbackend.dto.CustomerDTO;
-import ruhavarbackend.entity.Customer;
+import ruhavarbackend.customer.dto.CreateCustomerCommand;
+import ruhavarbackend.customer.dto.UpdateCustomerCommand;
+import ruhavarbackend.customer.dto.CustomerDTO;
 import ruhavarbackend.exception.EntityNotFoundException;
-import ruhavarbackend.repository.CustomerRepository;
 
 import java.lang.reflect.Type;
 import java.util.List;

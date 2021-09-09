@@ -9,9 +9,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.zalando.problem.Problem;
-import ruhavarbackend.command.CreateCustomerCommand;
-import ruhavarbackend.command.UpdateCustomerCommand;
-import ruhavarbackend.dto.CustomerDTO;
+import ruhavarbackend.customer.dto.CreateCustomerCommand;
+import ruhavarbackend.customer.dto.UpdateCustomerCommand;
+import ruhavarbackend.customer.dto.CustomerDTO;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +19,8 @@ import java.util.Objects;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+// TODO: 2021. 08. 05. @BeforeEach valamint a Controllerben lévő deleteAll() metódus törlése, helyette az @Sql(statements = "delete from customers") használata ajánlott
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CustomerControllerRestIT {

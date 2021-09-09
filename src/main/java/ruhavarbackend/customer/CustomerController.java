@@ -1,4 +1,4 @@
-package ruhavarbackend.controller;
+package ruhavarbackend.customer;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -6,10 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ruhavarbackend.command.CreateCustomerCommand;
-import ruhavarbackend.command.UpdateCustomerCommand;
-import ruhavarbackend.dto.CustomerDTO;
-import ruhavarbackend.service.CustomerService;
+import ruhavarbackend.customer.dto.CreateCustomerCommand;
+import ruhavarbackend.customer.dto.CustomerDTO;
+import ruhavarbackend.customer.dto.UpdateCustomerCommand;
 
 import javax.validation.Valid;
 import java.util.List;

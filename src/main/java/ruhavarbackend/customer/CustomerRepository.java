@@ -1,7 +1,6 @@
-package ruhavarbackend.repository;
+package ruhavarbackend.customer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ruhavarbackend.entity.Customer;
 
 import java.util.List;
 

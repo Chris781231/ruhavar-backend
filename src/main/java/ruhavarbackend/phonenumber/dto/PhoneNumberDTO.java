@@ -1,9 +1,9 @@
-package ruhavarbackend.dto;
+package ruhavarbackend.phonenumber.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ruhavarbackend.entity.Customer;
+import ruhavarbackend.customer.Customer;
 
 @Data
 @AllArgsConstructor

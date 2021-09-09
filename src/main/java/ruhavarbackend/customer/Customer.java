@@ -1,8 +1,9 @@
-package ruhavarbackend.entity;
+package ruhavarbackend.customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ruhavarbackend.phonenumber.PhoneNumber;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

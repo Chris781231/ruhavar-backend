@@ -1,18 +1,16 @@
-package ruhavarbackend.service;
+package ruhavarbackend.phonenumber;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ruhavarbackend.command.CreatePhoneNumberCommand;
-import ruhavarbackend.command.UpdatePhoneNumberCommand;
-import ruhavarbackend.dto.PhoneNumberDTO;
-import ruhavarbackend.entity.Customer;
-import ruhavarbackend.entity.PhoneNumber;
+import ruhavarbackend.customer.Customer;
 import ruhavarbackend.exception.EntityNotFoundException;
-import ruhavarbackend.repository.CustomerRepository;
-import ruhavarbackend.repository.PhoneNumberRepository;
+import ruhavarbackend.customer.CustomerRepository;
+import ruhavarbackend.phonenumber.dto.CreatePhoneNumberCommand;
+import ruhavarbackend.phonenumber.dto.PhoneNumberDTO;
+import ruhavarbackend.phonenumber.dto.UpdatePhoneNumberCommand;
 
 import java.lang.reflect.Type;
 import java.util.List;
